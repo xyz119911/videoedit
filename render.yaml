@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: telegram-video-bot
+    env: python
+    region: oregon
+    plan: standard
+    buildCommand: |
+      apt-get update
+      apt-get install -y ffmpeg
+      pip install -r requirements/prod.txt
+    startCommand: python -m app.main
+    envVars:
+      - key: TELEGRAM_TOKEN
+        fromGroup: telegram-secrets
+      - key: TEMP_DIR
+        value: /tmp/video_bot
+      - key: MAX_FILE_SIZE
+        value: 2147483648
+      - key: PORT
+        value: 8443
+    healthCheckPath: /health
+    disk:
+      name: video-temp
+      mountPath: /tmp/video_bot
+      sizeGB: 10
